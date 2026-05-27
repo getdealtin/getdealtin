@@ -384,7 +384,7 @@
 
 <!-- RESULTS -->
 <section id="results" class="hidden">
-  <div class="results-header"><h2>Here's the cards you were dealt</h2></div>
+  <div class="results-header"><h2>Your platform. Your hand.</h2></div>
   <div class="results-layout">
     <div class="sidebar-left">
       <div class="sb-label">The Kitchen Table</div>
@@ -636,6 +636,34 @@ function nextQuestion(){
 qInput.addEventListener("keydown",e=>{if(e.key==="Enter")nextQuestion();});
 
 async function showResults(){
+  const focus = answers.focus || "";
+
+  // Route based on what the user is focused on
+  if (focus === "Buying a home") {
+    // Pass answers via sessionStorage then redirect
+    sessionStorage.setItem("dealtin_answers", JSON.stringify(answers));
+    // Show brief routing message
+    document.body.innerHTML += `<div id="routing-overlay" style="
+      position:fixed;inset:0;background:#f5f0e4;z-index:9999;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+      font-family:'Playfair Display',serif;">
+      <div style="font-size:13px;font-family:'Space Mono',monospace;letter-spacing:0.15em;text-transform:uppercase;color:rgba(26,26,24,0.4)">dealing you in</div>
+      <div style="font-size:32px;font-weight:400;color:#1a1a18">Taking you to the<br><em style="color:#2e5e1e">Home Buying tool</em></div>
+      <div style="font-size:14px;color:rgba(26,26,24,0.45)">Your answers are coming with you.</div>
+    </div>`;
+    setTimeout(()=>{ window.location.href = "homebuying.html"; }, 1400);
+    return;
+  }
+  if (focus === "Food security") {
+    window.open("https://make-it-stretch.onrender.com", "_blank");
+    // Also show card table as their hub
+  }
+  if (focus === "Civic / political") {
+    window.open("https://follow-the-money.onrender.com", "_blank");
+    // Also show card table as their hub
+  }
+
+  // For "Understanding my finances" and "All of the above" — show card table
   const sec=document.getElementById("results");
   sec.classList.remove("hidden");
   processTable();
