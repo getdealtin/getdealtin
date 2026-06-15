@@ -186,9 +186,9 @@ Each tool operates independently:
 
 | Tool | Repo | URL |
 |------|------|-----|
-| Make It Stretch | `make-it-stretch` | make-it-stretch.onrender.com |
-| Follow the Money | `follow-the-money` | follow-the-money.onrender.com |
-| Home Buying Helper | `homebuying` | getdealtin.com/homebuying.html |
+| Make It Stretch | `make-it-stretch` | food.getdealtin.com |
+| Follow the Money | `follow-the-money` | money.getdealtin.com |
+| Home Buying Helper | `homebuying` | homebuying.getdealtin.com |
 | Landing page | `getdealtin` | getdealtin.com |
 
 The landing page links to each tool externally. No shared build system. No monorepo. Each tool is self-contained and can be deployed independently.
@@ -208,6 +208,33 @@ The Ben Franklin image is embedded as base64 in `index.html` — no `/images/` d
 
 ---
 
+## Hosting & DNS
+
+The landing page is served as a **static site on Render** (no cold start — static sites are always-on even on the free tier).
+
+Each tool runs as a separate Node.js service on Render and is mapped to a subdomain via CNAME records in Squarespace DNS.
+
+### DNS Records (Squarespace)
+
+| Type | Name | Target |
+|------|------|--------|
+| `A` | `@` | `216.24.57.1` |
+| `CNAME` | `www` | `getdealtin.onrender.com` |
+| `CNAME` | `food` | `make-it-stretch.onrender.com` |
+| `CNAME` | `money` | `follow-the-money.onrender.com` |
+| `CNAME` | `homebuying` | `homebuying.onrender.com` |
+
+### Cold Start Prevention
+
+Node.js services on Render's free tier sleep after 15 minutes of inactivity (50-second cold start on first request). UptimeRobot is configured to ping both services every 5 minutes to keep them warm:
+
+- `https://food.getdealtin.com` — pinged every 5 min
+- `https://money.getdealtin.com` — pinged every 5 min
+
+Static sites (getdealtin.com) are not affected — they don't sleep.
+
+---
+
 ## What Not To Do
 
 - Don't add cards or a question flow — that was the old design, intentionally removed
@@ -215,6 +242,7 @@ The Ben Franklin image is embedded as base64 in `index.html` — no `/images/` d
 - Don't use `#2e5e1e` — the old getdealtin green. The correct primary is `#1B3624`
 - Don't use `#c9a84c` — the old gold. The correct accent is `#D9822B`
 - Don't add more tools to the sidebar without adding them to the main content first
+- Don't link directly to `.onrender.com` URLs — always use the `getdealtin.com` subdomains
 - Don't write marketing copy in the Na section — it should read like journalism
 - Don't add a separate "about" page — the Na section at the bottom of this page is the about
 
